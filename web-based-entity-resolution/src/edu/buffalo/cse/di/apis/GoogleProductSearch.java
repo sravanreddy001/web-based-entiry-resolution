@@ -15,6 +15,7 @@ import net.sf.json.JSONSerializer;
 
 
 
+import edu.buffalo.cse.di.apis.entity.GoogleProductSearchResult;
 import edu.buffalo.cse.di.util.GoogleAPIKey;
 
 /**
@@ -62,24 +63,31 @@ public class GoogleProductSearch {
         return null;
     }
     
-    public static List<String> getItemNames(String query) {
+    /**
+     * Returns the list of GoogleProductSearchResults
+     * @param query
+     * @return List<GoogleProductSearchResult> - List of product search results
+     */
+    public static List<GoogleProductSearchResult> searchProducts(String query) {
         String content = queryGoogleProductSearch(query);
 
         JSONObject obj = (JSONObject) JSONSerializer.toJSON(content);
         JSONArray items = obj.getJSONArray("items");
-        List<String> itemNames = new ArrayList<String>();
+        List<GoogleProductSearchResult> itemNames = new ArrayList<GoogleProductSearchResult>();
         for(int i=0; i<items.size(); i++) {
             JSONObject item = items.getJSONObject(i);
             JSONObject product = item.getJSONObject("product");
+            GoogleProductSearchResult result = new GoogleProductSearchResult(product.getString("title")); 
+            itemNames.add(result);
             //String title = 
             //System.out.println(item.get("product"));
-            System.out.println(product.get("title"));
+            System.out.println(result);
         }
         return itemNames;
     }
     
     public static void main(String[] args) {
         //GoogleProductSearch.queryGoogleProductSearch("iphone");
-        GoogleProductSearch.getItemNames("iphone+4s");
+        GoogleProductSearch.searchProducts("iphone+4s");
     }
 }
