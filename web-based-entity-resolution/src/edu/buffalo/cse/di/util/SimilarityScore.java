@@ -12,7 +12,12 @@ import java.util.Set;
  * Calculate the metrics related to Jaccard coefficient.
  * @author sravanku@buffalo.edu
  */
-public class JaccardSimilarity {
+public class SimilarityScore {
+    
+    public enum SimilarityType {
+        JACCARD,
+        CUSTOM
+    }
     
     /**
      * Given two string as input return the JaccardCoefficient of both.

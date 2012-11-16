@@ -19,6 +19,7 @@ import net.sf.json.JSONSerializer;
 
 import edu.buffalo.cse.di.apis.entity.GoogleProductSearchResult;
 import edu.buffalo.cse.di.util.GoogleAPIKey;
+import edu.buffalo.cse.di.util.SimilarityScore.SimilarityType;
 import edu.buffalo.cse.di.util.algorithm.KNNAlgorithm;
 import edu.buffalo.cse.di.util.entity.Node;
 
@@ -108,7 +109,7 @@ public class GoogleProductSearch extends GoogleSearch {
         reader.close();
         
         KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.3);
-        List<List<Node>> clusters = algorithm.generateClusters();
+        List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.JACCARD);
         System.out.println(clusters.size());
         for(List<Node> cluster: clusters) {
             System.out.println(cluster);

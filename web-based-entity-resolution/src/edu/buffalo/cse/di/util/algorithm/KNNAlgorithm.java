@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-import edu.buffalo.cse.di.util.JaccardSimilarity;
+import edu.buffalo.cse.di.util.SimilarityScore;
+import edu.buffalo.cse.di.util.SimilarityScore.SimilarityType;
 import edu.buffalo.cse.di.util.entity.Node;
 
 /**
@@ -112,8 +113,9 @@ public class KNNAlgorithm {
     /**
      * Node distances is updated after this function is evaluated.
      * Only the nodes that have distance >= threshold are included.
+     * @param type 
      */
-    private void evaluateDistances() {
+    private void evaluateDistances(SimilarityType type) {
         for( int i=0; i<nodes.size(); i++ ) {
             PriorityQueue<NodeDistance> distances = new PriorityQueue<NodeDistance>(10 , nodeDistanceComparator);
             for( int j=0; j< nodes.size(); j++ ) {
@@ -121,7 +123,7 @@ public class KNNAlgorithm {
                     continue;
                 }
                 else {
-                    double distance = getDistanceBetweenNodes(nodes.get(i), nodes.get(j));
+                    double distance = getDistanceBetweenNodes(nodes.get(i), nodes.get(j),type);
                     if(distance >= this.threshold){ 
                         distances.add(new NodeDistance(j, distance));
                     }
@@ -131,17 +133,23 @@ public class KNNAlgorithm {
         }
     }
     
-    public double getDistanceBetweenNodes(Node node1, Node node2) {
+    public double getDistanceBetweenNodes(Node node1, Node node2, SimilarityType type) {
         // TODO complete this code by calculating jaccard similarity and
         // TODO weight assignment for different attributes in the total similarity.
         // this is a very basic implementation.
-        //return JaccardSimilarity.getJaccardSimilarty(node1.getString(), node2.getString());
-        return JaccardSimilarity.getCustomSimilarity(node1.getString(), node2.getString());
+
+        if(type == SimilarityType.JACCARD) {
+            return SimilarityScore.getJaccardSimilarty(node1.getString(), node2.getString());
+        }
+        else if(type == SimilarityType.CUSTOM) {
+            return SimilarityScore.getCustomSimilarity(node1.getString(), node2.getString());
+        }
+        throw new IllegalArgumentException("Invalid SimilarityType argument passed");
     }
 
-    public List<List<Node>> generateClusters() {
+    public List<List<Node>> generateClusters(SimilarityType type) {
         
-        evaluateDistances(); // Evaluate distances
+        evaluateDistances(type); // Evaluate distances
         
         int array[] = new int[nodes.size()];
         for(int i = 0; i<array.length; i++) {
