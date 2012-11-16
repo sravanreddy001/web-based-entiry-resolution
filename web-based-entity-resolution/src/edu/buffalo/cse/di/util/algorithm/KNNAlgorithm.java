@@ -6,6 +6,7 @@ package edu.buffalo.cse.di.util.algorithm;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -24,7 +25,6 @@ public class KNNAlgorithm {
             new NodeDistanceComparator();
     private Map<Node, PriorityQueue<NodeDistance>> nodeDistances = 
             new HashMap<Node, PriorityQueue<NodeDistance>>();
-    
     
     private class NodeDistance {
         int nodeId;
@@ -135,5 +135,37 @@ public class KNNAlgorithm {
         // weight assignment for different attributes in the total similarity.
         return 0.0;
     }
+
+    public List<List<Node>> generateClusters() {
+        int array[] = new int[nodes.size()];
+        for(int i = 0; i<array.length; i++) {
+            array[i] = 0;
+        }
+        List<List<Node>> clusters = new ArrayList<List<Node>>();
+        for(int i=0; i< nodes.size(); i++) {
+            if(array[i] == 0 ) {
+                List<Node> cluster = getCluster(nodes.get(i)); 
+                for(Node node: cluster ) {
+                    array[nodes.indexOf(node)] = 1;
+                }
+                clusters.add(cluster);
+            }
+        }
+        return clusters;
+    }
     
+    public List<Node> getCluster(Node node) {
+        LinkedList<Node> queue = new LinkedList<Node>();
+        queue.add(node);
+        List<Node> returnList = new ArrayList<Node>();
+        while ( !queue.isEmpty() ) {
+            Node firstNode = queue.removeFirst();
+            returnList.add(firstNode);
+            PriorityQueue<NodeDistance> nearNodes = nodeDistances.get(node);
+            for(int i=0; i<kValue && !nearNodes.isEmpty(); i++) {
+                queue.add(nodes.get(nearNodes.remove().nodeId));
+            }
+        }
+        return returnList;
+    }
 }
