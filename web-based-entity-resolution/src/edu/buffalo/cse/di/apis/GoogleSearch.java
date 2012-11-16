@@ -16,6 +16,7 @@ public abstract class GoogleSearch {
      * @return
      */
     public static String formatQuery(String query) {
+        // TODO modify this for a complex implementation.
         return query.replace(" ", "+");
     }
 }
