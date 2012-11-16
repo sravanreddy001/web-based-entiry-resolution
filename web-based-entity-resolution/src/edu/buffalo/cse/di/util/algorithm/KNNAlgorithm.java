@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
+import edu.buffalo.cse.di.util.JaccardSimilarity;
 import edu.buffalo.cse.di.util.entity.Node;
 
 /**
@@ -112,7 +113,7 @@ public class KNNAlgorithm {
      * Node distances is updated after this function is evaluated.
      * Only the nodes that have distance >= threshold are included.
      */
-    public void evaluateDistances() {
+    private void evaluateDistances() {
         for( int i=0; i<nodes.size(); i++ ) {
             PriorityQueue<NodeDistance> distances = new PriorityQueue<NodeDistance>(10 , nodeDistanceComparator);
             for( int j=0; j< nodes.size(); j++ ) {
@@ -132,11 +133,16 @@ public class KNNAlgorithm {
     
     public double getDistanceBetweenNodes(Node node1, Node node2) {
         // TODO complete this code by calculating jaccard similarity and
-        // weight assignment for different attributes in the total similarity.
-        return 0.0;
+        // TODO weight assignment for different attributes in the total similarity.
+        // this is a very basic implementation.
+        //return JaccardSimilarity.getJaccardSimilarty(node1.getString(), node2.getString());
+        return JaccardSimilarity.getCustomSimilarity(node1.getString(), node2.getString());
     }
 
     public List<List<Node>> generateClusters() {
+        
+        evaluateDistances(); // Evaluate distances
+        
         int array[] = new int[nodes.size()];
         for(int i = 0; i<array.length; i++) {
             array[i] = 0;
@@ -154,7 +160,7 @@ public class KNNAlgorithm {
         return clusters;
     }
     
-    public List<Node> getCluster(Node node) {
+    private List<Node> getCluster(Node node) {
         LinkedList<Node> queue = new LinkedList<Node>();
         queue.add(node);
         List<Node> returnList = new ArrayList<Node>();

@@ -1,6 +1,8 @@
 package edu.buffalo.cse.di.apis;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,13 +19,15 @@ import net.sf.json.JSONSerializer;
 
 import edu.buffalo.cse.di.apis.entity.GoogleProductSearchResult;
 import edu.buffalo.cse.di.util.GoogleAPIKey;
+import edu.buffalo.cse.di.util.algorithm.KNNAlgorithm;
+import edu.buffalo.cse.di.util.entity.Node;
 
 /**
  * Class to search against the google products using google product SearchAPI
  * 
  * @author sravanku@buffalo.edu
  */
-public class GoogleProductSearch {
+public class GoogleProductSearch extends GoogleSearch {
 
     private static final String BASE_URL 
         = "https://www.googleapis.com/shopping/search/v1/public/products?";
@@ -39,7 +43,7 @@ public class GoogleProductSearch {
     public static String queryGoogleProductSearch(String searchString) {
         
         String completeURL = BASE_URL + "key="+GoogleAPIKey.getGoogleAPIKey() +
-                optionalParms + "&q=" + searchString + outputFormat;
+                optionalParms + "&q=" + formatQuery(searchString) + outputFormat;
         
         try {
             InputStream stream = new URL(completeURL).openStream();
@@ -81,13 +85,34 @@ public class GoogleProductSearch {
             itemNames.add(result);
             //String title = 
             //System.out.println(item.get("product"));
-            System.out.println(result);
+            //System.out.println(result);
         }
         return itemNames;
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         //GoogleProductSearch.queryGoogleProductSearch("iphone");
         GoogleProductSearch.searchProducts("iphone+4s");
+        
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("MobilePhonesSample.txt")));
+        String line = null;
+        List<Node> nodes = new ArrayList<Node>();
+        while((line = reader.readLine()) != null) {
+            if(!line.equals("")) {
+                List<GoogleProductSearchResult> results = GoogleProductSearch.searchProducts(line);
+                for(GoogleProductSearchResult result : results) {
+                    nodes.add(new Node(result.getTitle()));
+                }
+            }
+        }
+        reader.close();
+        
+        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.3);
+        List<List<Node>> clusters = algorithm.generateClusters();
+        System.out.println(clusters.size());
+        for(List<Node> cluster: clusters) {
+            System.out.println(cluster);
+        }
+        
     }
 }

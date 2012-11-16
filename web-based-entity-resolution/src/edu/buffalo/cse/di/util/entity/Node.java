@@ -8,6 +8,7 @@ package edu.buffalo.cse.di.util.entity;
  * @author sravanku@buffalo.edu
  */
 public class Node {
+    // TODO This very basic representation has only a single attribute.
     private final String string;
 
     public Node(String string) {
@@ -16,5 +17,10 @@ public class Node {
     
     public String getString() {
         return string;
+    }
+
+    @Override
+    public String toString() {
+        return "Node [string=" + string + "]";
     }
 }
