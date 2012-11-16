@@ -108,8 +108,9 @@ public class GoogleProductSearch extends GoogleSearch {
         }
         reader.close();
         
-        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.3);
-        List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.JACCARD);
+        // TODO Parameters selected below are for test search.
+        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.5);
+        List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.CUSTOM);
         System.out.println(clusters.size());
         for(List<Node> cluster: clusters) {
             System.out.println(cluster);
